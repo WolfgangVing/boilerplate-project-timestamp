@@ -32,39 +32,19 @@ var listener = app.listen(process.env.PORT, function () {
 });
 
 /*Timestamp object */
-let timeStampObj = {
-  unix: String,
-  utc: String,
-}
 
-/**
- * TODO:
- * request to /api/:date with vale date should return a JSON object
- * with a unix key with the Unix timestamp of the input date IN MILLISECONDS
- * and the like jsonOBJ{"unix": <value in milliseconds>}
- * 
- */
-// const timeStamp = (req, res, next) => {
-//   return newPromise
-//   /*The Date() constructor has bunch of ways to handle dates, as well epoch timestamp
-//   just like that I have to handle the req.params into the Date() constructor
-//   and to reverse it I can just use valueOf().*/
-//   req.params ? resolve() : PromiseRejection
-//   const newDate =  req.params ? new Date(req.params): new Date();
-//   const newUnix = req.params ? new Date(req.params): new Date();
-//   timeStampObj['utc'] = newDate;
-//   timeStampObj['unix'] = newUnix.valueOf();
+let timeStampObj = {}
+app.get('/api/:date?', function(req, res){
+  let date;
 
-//   next(timeStampObj);
-// }
-app.get('/api/:date?', asyncTimeStamp, async function(req, res){
-  try{
-    const newDate = req.params ? new Date(req.params): new Date();
-    timeStampObj['utc'] = newDate.toString();
-    timeStampObj['unix'] = newDate.valueOf();
-    res.json(timeStampObj)
-  } catch (err) {
-    console.log(err)
+  date = new Date(req.params.date); 
+  //if anything is passed, it will intepret as "now";
+  if(req.params.date === undefined) {
+    date = new Date();
   }
+  console.log(date)
+  console.log(Date.parse(date))
+  timeStampObj['utc'] = date.toUTCString();
+  timeStampObj['unix'] = Date.parse(date);
+  res.json(timeStampObj);
 })
-console.log(time)
