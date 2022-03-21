@@ -33,18 +33,31 @@ var listener = app.listen(process.env.PORT, function () {
 
 /*Timestamp object */
 
-let timeStampObj = {}
+let timeStampObj = {
+  utc: "",
+  unix: ""
+}
 app.get('/api/:date?', function(req, res){
-  let date;
+  let input = req.params.date
+  console.log(input)
 
-  date = new Date(req.params.date); 
-  //if anything is passed, it will intepret as "now";
-  if(req.params.date === undefined) {
-    date = new Date();
+  if(input.includes('-')) {
+    timeStampObj.utc = new Date(input).toUTCString();
+    timeStampObj.unix = new Date(input).getTime();
+    console.log(timeStampObj)
+  } else {
+    timeStampObj.utc = new Date(parseInt(input)).toUTCString()
+    timeStampObj.unix = new Date(parseInt(input)).getTime()
+    console.log(timeStampObj)
   }
-  console.log(date)
-  console.log(Date.parse(date))
-  timeStampObj['utc'] = date.toUTCString();
-  timeStampObj['unix'] = Date.parse(date);
+  if(!req.params.date) {
+    res.json({error: "Invalid Date"})
+  }
   res.json(timeStampObj);
+})
+
+app.get('/api', function(req, res){
+  timeStampObj.utc = new Date().toUTCString();
+  timeStampObj.unix = new Date().getTime()
+  res.json(timeStampObj)
 })
